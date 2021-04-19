@@ -42,13 +42,13 @@ h1 {
     flex-wrap: wrap;
 }
 #todolist>section {
-    
+
     width: 50%;
     min-width: 200px;
-    margin: 0 auto;
+    margin: 5px auto;  
     background-color: #fcfafa;
     border: 2px solid ;
-    
+    padding: 5px;
 }
 #todolist>section>.checkbox {
     float: right;
