@@ -11,7 +11,7 @@ class Task{
 const todolistElement = document.getElementById('todolist')
 function appendTask(task) {
     todolistElement.innerHTML += 
-    '<section>' +
+    `<section onclick="console.log('харош',this)">` +
         `<h3 ${IsComplete(task.done)}>${task.title}</h3>` +
         '<div class="checkbox">' +
             `<input type="checkbox" name="done" value="" ${IsCheck(task.done)}>` +
@@ -19,6 +19,7 @@ function appendTask(task) {
             WriteDescription(task.description) +
             WriteDueDate(task.dueDate) +
     '</section>';
+
 }
 
 function IsComplete(done) {
