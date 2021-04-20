@@ -16,6 +16,10 @@ body {
     margin: 0 auto;
     background: #ffffff;
 }
+header {
+    background-color: #806c8a;
+    text-align: center;
+}
 
 h3 {
     background-color: 	#000000;
@@ -25,9 +29,9 @@ h3 {
 h1 {
     padding: 10px;
     text-align: center;
-    background-color: #806c8a;
     color: white;
 }
+
 .task-complete{
     text-decoration: line-through;
     color: rgba(255, 255, 255, 0.308);
@@ -52,4 +56,7 @@ h1 {
 }
 #todolist>section>.checkbox {
     float: right;
+}
+.show-not-all-task {
+    display: none;
 }
