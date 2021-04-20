@@ -8,13 +8,13 @@ class Task {
     }
 }
 
-
+let isShowAll = false;
 const todolistElement = document.getElementById('todolist')
-function appendTask(task, isShowAll) {
+function appendTask(task) {
     
-    todolistElement.appendChild(BuildHtmlTask(task, isShowAll));
+    todolistElement.appendChild(BuildHtmlTask(task));
 }
-function BuildHtmlTask(task, isShowAll) {
+function BuildHtmlTask(task) {
     const {id, title, description, dueDate, done } = task;
     let listElement = document.createElement('section');
     listElement.setAttribute("id", `taskId=${id}`)
@@ -97,12 +97,12 @@ function FindById(id) {
 
 
 let buttonElement = document.querySelector("header");
-function AddButtonForShow(isShowAll) {
+function AddButtonForShow() {
     
-    buttonElement.appendChild(ButtonTask(isShowAll));
+    buttonElement.appendChild(ButtonTask());
 }
 
-function ButtonTask(isShowAll) {
+function ButtonTask() {
     
     let button = document.createElement('button');
     if (isShowAll) {
@@ -122,14 +122,7 @@ function ShowAllTask(event) {
     todoList.forEach(appendTask);
 
 }
-function ListHtml() {
-    let mas;
-    for (let index = 0; index < todoList.length; index++) {
-        mas += BuildHtmlTask(todoList[index]);
-        
-    }
-    return mas;
-}
+
 
 
 
@@ -145,7 +138,7 @@ let todoList = [
     new Task(5,'Listen lesson', '', '2021.05.19', false),
 ];
 
-let isShowAll = false;
+
 AddButtonForShow(isShowAll);
 
 todoList.forEach(appendTask, isShowAll);
