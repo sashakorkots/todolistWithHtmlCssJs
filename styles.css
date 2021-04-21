@@ -73,5 +73,7 @@ h1 {
     border: 2px solid ;
     padding: 5px;
 }
-
+.show-form {
+    display: none;
+}
 

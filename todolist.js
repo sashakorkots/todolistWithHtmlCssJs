@@ -7,7 +7,7 @@ class Task {
             this.id = idOrObject;
             this.title = title;
             this.description = description;
-            this.dueDate = dueDate;
+            this.dueDate = new Date(dueDate);
             this.done = done;
         }
     }
@@ -75,17 +75,14 @@ function WriteDescription(description) {
         return '';
 }
 function WriteDueDate(dueDate) {
-    if (dueDate != '' && dueDate != undefined)
-        return `<div ${OverDueDate(dueDate)}> DueDate: ${dueDate} </div>`;
+    if (dueDate != '' && dueDate != undefined && dueDate != 'Invalid Date')
+        return `<div ${OverDueDate(dueDate)}> DueDate: ${new Date(dueDate).toDateString()} </div>`;
     else
         return '';
 }
 function OverDueDate(dueDate) {
-
-    let date = new Date(dueDate);
-
     let now = new Date();
-    if (date < now) {
+    if (dueDate < now) {
         return 'class="over-due-date"'
     }
 }
@@ -104,10 +101,10 @@ function FindById(id) {
 let buttonElement = document.querySelector("header");
 function AddButtonForShow() {
 
-    buttonElement.appendChild(ButtonShowTask());
+    buttonElement.appendChild(ButtonTask());
 }
 
-function ButtonShowTask() {
+function ButtonTask() {
 
     let button = document.createElement('button');
     if (isShowAll) {
@@ -122,18 +119,13 @@ function ButtonShowTask() {
 }
 function ShowAllTask(event) {
     isShowAll = !isShowAll;
-    buttonElement.replaceChild(ButtonShowTask(isShowAll), this);
+    buttonElement.replaceChild(ButtonTask(isShowAll), this);
     todolistElement.innerHTML = '';
     todoList.forEach(appendTask);
 
 }
-
-
-
-
-
-const taskForm = document.getElementById('add-task');
-
+let isShowForm = false;
+const taskForm = document.forms['task'];
 function AddButtonAddTask() {
 
     buttonElement.appendChild(ButtonAddTask());
@@ -143,42 +135,20 @@ function ButtonAddTask() {
 
     let button = document.createElement('button');
     button.innerText += 'Add task';
-    button.onclick = CreateForm;
-
+    button.onclick = showForm;
     return button;
 }
 
+function showForm(event) {
+    if (!isShowForm) {
 
-
-function CreateForm(event) {
-    let form = document.createElement('form');
-    form.setAttribute("name","task");
-    form.setAttribute("class", "form-for-task");
-    form.innerHTML += '<h3><input type="text" name="title" placeholder="Title"></h3>' +
-        '<input type="text" name="description" placeholder="Description">' +
-        '<input type="date" name="dueDate" placeholder="DueDate">' +
-        '<div>' +
-            '<button type="submit">Save new task</button>' +
-        '</div>' ;
-    
-    form.addEventListener('submit', (event) => {
-        event.preventDefault();
-        let taskFormData = new FormData(taskForm)
-        let task = Object.fromEntries(taskFormData.entries());
-        task.id = todoList.length;
-        task.done = false
-        let currentTask = new Task(task);
-        todoList.push(currentTask);
-        appendTask(currentTask);
-        console.log(todoList);
-        taskForm.reset();
-    });
-    console.log(form);
-    taskForm.appendChild(form);
+        taskForm.classList.remove('show-form');
+    }
+    else {
+        taskForm.classList.add('class', 'show-form');
+    }
+    isShowForm = !isShowForm;
 }
-
-
-
 
 
 
@@ -199,3 +169,26 @@ todoList.forEach(appendTask);
 
 
 
+
+taskForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    let taskFormData = new FormData(taskForm)
+    let task = Object.fromEntries(taskFormData.entries());
+    task.id = todoList[todoList.length].id + 1;
+    task.dueDate = new Date(task.dueDate);
+    task.done = false
+    let currentTask = new Task(task);
+    if (currentTask.title == '') {
+        alert('title has not inputed')
+    }
+    else {
+        
+        todoList.push(currentTask);
+        appendTask(currentTask);
+        
+        taskForm.classList.add('show-form');
+        isShowForm = !isShowForm;
+        taskForm.reset();
+    }
+    
+});
