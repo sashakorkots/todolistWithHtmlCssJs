@@ -1,4 +1,4 @@
-class Task {
+/* class Task {
     constructor(idOrObject, title, description, dueDate, done) {
         if (typeof idOrObject === 'object') {
             Object.assign(this, idOrObject)
@@ -11,16 +11,15 @@ class Task {
             this.done = done;
         }
     }
-}
+} */
 
 let isShowAll = false;
-const todolistElement = document.getElementById('todolist')
+const todolistElement = document.getElementById('todolist');
 function appendTask(task) {
-
     todolistElement.appendChild(BuildHtmlTask(task));
 }
 function BuildHtmlTask(task) {
-    const { id, title, description, dueDate, done } = task;
+    const { id, title, description, doDate, done } = task;
     let listElement = document.createElement('section');
     listElement.setAttribute("id", `taskId=${id}`)
     if (isShowAll && done) {
@@ -29,18 +28,18 @@ function BuildHtmlTask(task) {
     let htmlTags =
         `<h3 ${IsComplete(done)}>${title}</h3>` +
         '<div class="checkbox">' +
-        `<input type="checkbox" name="done" value="" ${IsCheck(done)}></input>` +
+        `<input type="checkbox" name="done" value="" ${IsCheck(done)} ></input>` +
         '</div>' +
         WriteDescription(description) +
-        WriteDueDate(dueDate) +
+        WriteDueDate(doDate) +
         `<button>Delete task</button>`;
     listElement.innerHTML += htmlTags
-    listElement.onclick = RemoveTask;
+    listElement.onclick = ClickOnTask;
     return listElement;
 }
 
 
-function RemoveTask(event) {
+function ClickOnTask(event) {
     let index = FindById(this.id.split('=')[1]);
     if (event.target.tagName === 'BUTTON') {
 
@@ -55,6 +54,7 @@ function RemoveTask(event) {
 
 
 function IsComplete(done) {
+    console.log(done);
     if (done) {
         return 'class="task-complete"'
     }
@@ -75,8 +75,9 @@ function WriteDescription(description) {
         return '';
 }
 function WriteDueDate(dueDate) {
-    if (dueDate != '' && dueDate != undefined && dueDate != 'Invalid Date')
-        return `<div ${OverDueDate(dueDate)}> DueDate: ${new Date(dueDate).toDateString()} </div>`;
+    console.log(dueDate);
+    if (dueDate != '' && dueDate != null)
+        return `<div ${OverDueDate(dueDate)}> DueDate: ${dueDate} </div>`;
     else
         return '';
 }
@@ -121,7 +122,7 @@ function ShowAllTask(event) {
     isShowAll = !isShowAll;
     buttonElement.replaceChild(ButtonTask(isShowAll), this);
     todolistElement.innerHTML = '';
-    todoList.forEach(appendTask);
+    getListOfTasks();
 
 }
 let isShowForm = false;
@@ -152,7 +153,7 @@ function showForm(event) {
 
 
 
-let todoList = [
+/* let todoList = [
     new Task(0, 'Make class', '', '2021.02.19', true),
     new Task(1, 'Make constructor', 'by video', '2021.05.19', false),
     new Task(2, 'Listen lesson', '', '2021.05.19', false),
@@ -160,13 +161,11 @@ let todoList = [
     new Task(4, 'Make function', 'for example arrow function', '2021.05.19', false),
     new Task(5, 'Listen lesson', '', '2021.05.19', false),
 ];
-let lastId = 5;
+let lastId = 5; */
 
 
-AddButtonForShow(isShowAll);
-AddButtonAddTask();
 
-todoList.forEach(appendTask);
+/* todoList.forEach(appendTask); */
 
 
 
@@ -186,10 +185,45 @@ taskForm.addEventListener('submit', (event) => {
         lastId++;
         todoList.push(currentTask);
         appendTask(currentTask);
-        
+
         taskForm.classList.add('show-form');
         isShowForm = !isShowForm;
         taskForm.reset();
     }
-    
+
 });
+
+
+
+/* 
+web api 
+*/
+
+
+
+function getListOfTasks(listId) {
+    const taskListEndpoint = `http://localhost:5000/api/ToDoLists/lists/${listId}/tasks`;
+    fetch(taskListEndpoint)
+        .then(response => response.json())
+        .then(tasks => tasks.forEach(appendTask));
+}
+function UpdateTask(listId, taskId) {
+    const taskListEndpoint = `http://localhost:5000/api/ToDoLists/lists/${listId}/tasks/${taskId}`;
+    fetch(taskListEndpoint, {
+        method: 'POST',
+        headers: {
+            `Content-Type`: 'appli'
+        }
+    })
+        .then(response => response.json())
+        .then(tasks => tasks.forEach(appendTask));
+}
+
+
+
+
+AddButtonForShow(isShowAll);
+AddButtonAddTask();
+
+getListOfTasks(3);
+
