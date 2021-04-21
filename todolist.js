@@ -33,7 +33,7 @@ function BuildHtmlTask(task) {
         '</div>' +
         WriteDescription(description) +
         WriteDueDate(dueDate) +
-        `<button>X</button>`;
+        `<button>Delete task</button>`;
     listElement.innerHTML += htmlTags
     listElement.onclick = RemoveTask;
     return listElement;
