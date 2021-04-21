@@ -160,6 +160,7 @@ let todoList = [
     new Task(4, 'Make function', 'for example arrow function', '2021.05.19', false),
     new Task(5, 'Listen lesson', '', '2021.05.19', false),
 ];
+let lastId = 5;
 
 
 AddButtonForShow(isShowAll);
@@ -174,7 +175,7 @@ taskForm.addEventListener('submit', (event) => {
     event.preventDefault();
     let taskFormData = new FormData(taskForm)
     let task = Object.fromEntries(taskFormData.entries());
-    task.id = todoList[todoList.length].id + 1;
+    task.id = lastId + 1;
     task.dueDate = new Date(task.dueDate);
     task.done = false
     let currentTask = new Task(task);
@@ -182,7 +183,7 @@ taskForm.addEventListener('submit', (event) => {
         alert('title has not inputed')
     }
     else {
-        
+        lastId++;
         todoList.push(currentTask);
         appendTask(currentTask);
         
