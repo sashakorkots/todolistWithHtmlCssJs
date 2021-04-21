@@ -25,6 +25,8 @@ h3 {
     background-color: 	#000000;
     color: white;
     text-align: center;
+    padding-top: 5px;
+    padding-bottom: 10px;
 }
 h1 {
     padding: 10px;
@@ -60,3 +62,16 @@ h1 {
 .show-not-all-task {
     display: none;
 }
+.show-not-all-task>checkbox {
+    float: right;
+}
+.form-for-task {
+    width: 50%;
+    min-width: 200px;
+    margin: 5px auto;  
+    background-color: #fcfafa;
+    border: 2px solid ;
+    padding: 5px;
+}
+
+
