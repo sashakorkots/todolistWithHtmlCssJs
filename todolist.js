@@ -1,27 +1,30 @@
-/* class Task {
-    constructor(idOrObject, title, description, dueDate, done) {
-        if (typeof idOrObject === 'object') {
-            Object.assign(this, idOrObject)
+class Task {
+    constructor(myTaskId, title, description, dueDate, done) {
+        if (typeof myTaskId === 'object') {
+            Object.assign(this, myTaskId)
         }
         else {
-            this.id = idOrObject;
+            this.myTaskId = myTaskId;
             this.title = title;
             this.description = description;
             this.dueDate = new Date(dueDate);
             this.done = done;
         }
     }
-} */
-
+}
+const ListId = 3;
 let isShowAll = false;
 const todolistElement = document.getElementById('todolist');
 function appendTask(task) {
+   /*  console.log(task); */
     todolistElement.appendChild(BuildHtmlTask(task));
 }
 function BuildHtmlTask(task) {
-    const { id, title, description, doDate, done } = task;
+    
+    const {myTaskId, title, description, doDate, done} = task;
+    console.log(myTaskId);
     let listElement = document.createElement('section');
-    listElement.setAttribute("id", `taskId=${id}`)
+    listElement.setAttribute("id", `taskId=${myTaskId}`)
     if (isShowAll && done) {
         listElement.setAttribute("class", "show-not-all-task");
     }
@@ -40,21 +43,23 @@ function BuildHtmlTask(task) {
 
 
 function ClickOnTask(event) {
-    let index = FindById(this.id.split('=')[1]);
+    const index = this.id.split('=')[1];
+    
     if (event.target.tagName === 'BUTTON') {
-
-        todoList.splice(index, 1)
         this.remove();
+        DeleteTask(ListId, index);
     }
     else if (event.target.tagName === 'INPUT') {
-        todoList[index].done = event.target.checked;
-        todolistElement.replaceChild(BuildHtmlTask(todoList[index]), this)
+        let currentTask = {'done' : `${event.target.checked}`};
+        /* console.log(UpdateTask(ListId, index,currentTask)); */
+        UpdateTask(ListId, index,currentTask)
+            .then(task => todolistElement.replaceChild(BuildHtmlTask(task), this))
+        
     }
 }
 
 
 function IsComplete(done) {
-    console.log(done);
     if (done) {
         return 'class="task-complete"'
     }
@@ -75,15 +80,14 @@ function WriteDescription(description) {
         return '';
 }
 function WriteDueDate(dueDate) {
-    console.log(dueDate);
     if (dueDate != '' && dueDate != null)
-        return `<div ${OverDueDate(dueDate)}> DueDate: ${dueDate} </div>`;
+        return `<div ${OverDueDate(dueDate)}> DueDate: ${new Date(dueDate).toDateString()} </div>`;
     else
         return '';
 }
 function OverDueDate(dueDate) {
     let now = new Date();
-    if (dueDate < now) {
+    if (new Date(dueDate) < now) {
         return 'class="over-due-date"'
     }
 }
@@ -122,7 +126,7 @@ function ShowAllTask(event) {
     isShowAll = !isShowAll;
     buttonElement.replaceChild(ButtonTask(isShowAll), this);
     todolistElement.innerHTML = '';
-    getListOfTasks();
+    getListOfTasks(3);
 
 }
 let isShowForm = false;
@@ -153,42 +157,28 @@ function showForm(event) {
 
 
 
-/* let todoList = [
-    new Task(0, 'Make class', '', '2021.02.19', true),
-    new Task(1, 'Make constructor', 'by video', '2021.05.19', false),
-    new Task(2, 'Listen lesson', '', '2021.05.19', false),
-    new Task(3, 'Make object', 'in js', '2021.02.19', true),
-    new Task(4, 'Make function', 'for example arrow function', '2021.05.19', false),
-    new Task(5, 'Listen lesson', '', '2021.05.19', false),
-];
-let lastId = 5; */
-
-
-
-/* todoList.forEach(appendTask); */
-
-
 
 
 taskForm.addEventListener('submit', (event) => {
     event.preventDefault();
     let taskFormData = new FormData(taskForm)
     let task = Object.fromEntries(taskFormData.entries());
-    task.id = lastId + 1;
-    task.dueDate = new Date(task.dueDate);
+
+    if (task.doDate != null) {
+        task.doDate = task.doDate;
+    }
     task.done = false
-    let currentTask = new Task(task);
+    let currentTask = task;
     if (currentTask.title == '') {
         alert('title has not inputed')
     }
     else {
-        lastId++;
-        todoList.push(currentTask);
-        appendTask(currentTask);
-
         taskForm.classList.add('show-form');
         isShowForm = !isShowForm;
-        taskForm.reset();
+
+        CreateTask(ListId,currentTask)
+            .then(task => appendTask(task))
+            .then(_ => taskForm.reset());
     }
 
 });
@@ -207,16 +197,37 @@ function getListOfTasks(listId) {
         .then(response => response.json())
         .then(tasks => tasks.forEach(appendTask));
 }
-function UpdateTask(listId, taskId) {
-    const taskListEndpoint = `http://localhost:5000/api/ToDoLists/lists/${listId}/tasks/${taskId}`;
-    fetch(taskListEndpoint, {
+function UpdateTask(listId, taskId, task) {
+    const taskListEndpoint = `http://localhost:5000/api/ToDoLists/list/3/task/${taskId}`;
+    return fetch(taskListEndpoint, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(task)
+    })
+    .then(response => response.json());
+}
+function CreateTask(listId, task) {
+    const taskListEndpoint = `http://localhost:5000/api/ToDoLists/list/3/task`;
+    return fetch(taskListEndpoint, {
         method: 'POST',
         headers: {
-            `Content-Type`: 'appli'
-        }
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(task)
     })
-        .then(response => response.json())
-        .then(tasks => tasks.forEach(appendTask));
+    .then(response => response.json());
+}
+function DeleteTask(listId, taskId) {
+    const taskListEndpoint = `http://localhost:5000/api/ToDoLists/list/3/task/${taskId}`;
+    return fetch(taskListEndpoint, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    })
+    .then(response => response.json());
 }
 
 
@@ -225,5 +236,6 @@ function UpdateTask(listId, taskId) {
 AddButtonForShow(isShowAll);
 AddButtonAddTask();
 
-getListOfTasks(3);
+
+getListOfTasks(ListId);
 
