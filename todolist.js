@@ -22,7 +22,6 @@ function appendTask(task) {
 function BuildHtmlTask(task) {
     
     const {myTaskId, title, description, doDate, done} = task;
-    console.log(myTaskId);
     let listElement = document.createElement('section');
     listElement.setAttribute("id", `taskId=${myTaskId}`)
     if (isShowAll && done) {
@@ -48,7 +47,7 @@ function ClickOnTask(event) {
     if (event.target.tagName === 'BUTTON') {
         this.remove();
         DeleteTask(ListId, index);
-    }
+    } 
     else if (event.target.tagName === 'INPUT') {
         let currentTask = {'done' : `${event.target.checked}`};
         /* console.log(UpdateTask(ListId, index,currentTask)); */
@@ -238,4 +237,13 @@ AddButtonAddTask();
 
 
 getListOfTasks(ListId);
+
+
+
+
+
+
+
+
+
 
